@@ -1,4 +1,4 @@
-package ru.netology;
+package ru.netology.delivery.test;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
-import ru.netology.data.DataGenerator;
+import ru.netology.delivery.data.DataGenerator; // <-- Если ошибка, поменяйте на ru.netology.data.DataGenerator;
 
 import java.time.Duration;
 
@@ -17,11 +17,13 @@ public class CardDeliveryReplanTest {
 
     @BeforeEach
     void setUp() {
+        Configuration.browser = "chrome";
+        Configuration.timeout = 15000;
         open("http://localhost:9999");
     }
 
     @Test
-    @DisplayName("Перепланирование встречи с изменением даты")
+    @DisplayName("Replan meeting with date change")
     void shouldReplanMeetingSuccessfully() {
         DataGenerator.UserInfo user = DataGenerator.Registration.generateUser("ru");
         String firstDate = DataGenerator.generateDate(3);
@@ -40,7 +42,7 @@ public class CardDeliveryReplanTest {
         checkSuccessNotification(secondDate);
     }
 
-    @Step("Заполнить форму и отправить первый заказ на дату {date}")
+    @Step("Fill form and send first order for date {date}")
     private void createFirstOrder(DataGenerator.UserInfo user, String date) {
         $("[data-test-id='city'] input").setValue(user.getCity());
         $("[data-test-id='date'] input")
@@ -52,7 +54,7 @@ public class CardDeliveryReplanTest {
         $("button.button").click();
     }
 
-    @Step("Проверить уведомление об успехе для даты {date}")
+    @Step("Check success notification for date {date}")
     private void checkSuccessNotification(String date) {
         $("[data-test-id='success-notification']")
                 .shouldBe(Condition.visible, Duration.ofSeconds(15))
@@ -60,7 +62,7 @@ public class CardDeliveryReplanTest {
                 .shouldHave(Condition.text("Встреча успешно запланирована на " + date));
     }
 
-    @Step("Перепланировать встречу на дату {newDate}")
+    @Step("Replan meeting to date {newDate}")
     private void replanMeeting(DataGenerator.UserInfo user, String newDate) {
         $("[data-test-id='date'] input")
                 .press(Keys.chord(Keys.CONTROL, "a"), Keys.BACK_SPACE)
