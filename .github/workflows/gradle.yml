@@ -26,17 +26,22 @@ jobs:
     - name: Start Application
       run: |
         java -jar artifacts/app-replan-delivery.jar &
-        sleep 10 # Ждем 10 секунд, чтобы приложение успело запуститься
+        sleep 15 # Даем приложению 15 секунд на запуск
 
-    # 2. Запускаем тесты (в headless режиме)
+    # 2. Даем права и запускаем тесты
     - name: Run Tests
-      run: ./gradlew test -Dselenide.headless=true
+      run: |
+        chmod +x gradlew
+        ./gradlew test -Dselenide.headless=true
 
-    # 3. Сохраняем отчет Allure (если нужно)
+    # 3. Генерируем отчет Allure
     - name: Generate Allure Report
       if: always()
-      run: ./gradlew allureReport
+      run: |
+        chmod +x gradlew
+        ./gradlew allureReport
 
+    # 4. Сохраняем отчет Allure как артефакт
     - name: Upload Allure Report
       if: always()
       uses: actions/upload-artifact@v4
